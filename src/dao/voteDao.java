@@ -33,7 +33,7 @@ public class voteDao {
 		StringBuffer sb=new StringBuffer ("select Title from vote");
 		if(!StringUtil.isEmpty(n))
 		{
-			sb.append(" and Name like '%"+n+"%'");
+			sb.append(" and Title like '%"+n+"%'");
 		}
 		sb.append(" and Association_ID=?");
 		PreparedStatement pstmt=con.prepareStatement(sb.toString().replaceFirst("and", "where"));
@@ -48,6 +48,15 @@ public class voteDao {
 	   	pstmt.setInt(1, aId);
 	    pstmt.setString(2, name);
 	    return pstmt.executeUpdate();
+	}
+	
+	public ResultSet checkName(Connection con,String n,int aId)throws Exception
+	{
+		String sql="select ID from research where Title=? and Association_ID=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1,n);
+		pstmt.setInt(2, aId);
+		return pstmt.executeQuery();
 	}
 
 }

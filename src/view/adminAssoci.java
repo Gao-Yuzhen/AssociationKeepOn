@@ -184,10 +184,12 @@ public class adminAssoci extends JFrame {
 		{
 			con=dUtil.getCon();
 			ResultSet rs=aDao.asList(con, adId,searchTxt.getText());
+			int x=1;
 			while(rs.next())
 			{
 				Vector v=new Vector();
-				v.add(rs.getInt("ID"));
+				v.add(x);
+				x++;
 				v.add(rs.getString("Name"));
 				v.add(rs.getString("Leader"));
 				v.add(rs.getString("Status"));
@@ -297,7 +299,7 @@ public class adminAssoci extends JFrame {
                 uaDao.resetMem(con, id);
                 acDao.resetAc(con, id);
                 aDao.updateMem(con, id, 0);
-                aDao.updateFin(con, id, 0);
+                //aDao.updateFin(con, id, 0);
 				fillTable(Logon.admin.getId());
 			}
 			else

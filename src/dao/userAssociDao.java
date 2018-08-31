@@ -104,19 +104,19 @@ public class userAssociDao {
 	    return pstmt.executeUpdate();
 	}
 	
-	public int userDelete(Connection con,String sid) throws Exception	
+	public int userDelete(Connection con,String n) throws Exception	
 	{
-		String sql="delete from user_has_association where User_ID=(select ID from user where Email=?)";
+		String sql="delete from user_has_association where User_ID=(select ID from user where Name=?)";
 	    PreparedStatement pstmt=con.prepareStatement(sql);
-	   	pstmt.setString(1, sid);
+	   	pstmt.setString(1, n);
 	    return pstmt.executeUpdate();
 	}
 	
-	public ResultSet myAssoci(Connection con,String sid) throws Exception
+	public ResultSet myAssoci(Connection con,String n) throws Exception
 	{
-		String sql="select Association_ID from user_has_association,user where Email=? and User_ID=ID and Status!='加入待审核'";
+		String sql="select Association_ID from user_has_association,user where Name=? and User_ID=ID and Status!='加入待审核'";
 		PreparedStatement pstmt=con.prepareStatement(sql);
-		pstmt.setString(1, sid);
+		pstmt.setString(1, n);
 		return pstmt.executeQuery();
 	}
 }

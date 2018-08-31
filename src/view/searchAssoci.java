@@ -34,11 +34,12 @@ public class searchAssoci extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
 	private JScrollPane associList;
-	private int inId;
+	private String aName;
 	
 	dbUtil dUtil=new dbUtil();
 	associDao aDao=new associDao();
 	userAssociDao uaDao=new userAssociDao();
+	private JButton b_bbs;
 
 	/**
 	 * Launch the application.
@@ -60,7 +61,7 @@ public class searchAssoci extends JFrame {
 	 * Create the frame.
 	 */
 	public searchAssoci() {
-		inId=0;
+		aName="";
 		setResizable(false);
 		setTitle("\u793E\u56E2KeepOn");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -132,6 +133,16 @@ public class searchAssoci extends JFrame {
 		b_in.setBounds(916, 336, 130, 35);
 		contentPane.add(b_in);
 		
+		b_bbs = new JButton("\u793E\u56E2\u8BBA\u575B");
+		b_bbs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				b_bbsActionPerformed(e);
+			}
+		});
+		b_bbs.setFont(new Font("汉仪南宫体简", Font.PLAIN, 20));
+		b_bbs.setBounds(916, 398, 130, 35);
+		contentPane.add(b_bbs);
+		
 	}
 
 	public void fillTable(Association a)
@@ -142,11 +153,13 @@ public class searchAssoci extends JFrame {
 		try
 		{
 			con=dUtil.getCon();
+			int x=1;
 			ResultSet rs=aDao.associList(con, a);
 			while(rs.next())
 			{
 				Vector v=new Vector();
-				v.add(rs.getInt("ID"));
+				v.add(x);
+				x++;
 				v.add(rs.getString("Name"));
 				dtm.addRow(v);
 			}
@@ -173,17 +186,30 @@ public class searchAssoci extends JFrame {
 	
 	private void tableMousePressed(MouseEvent e) {
 		int row=table.getSelectedRow();
-		inId= (int) table.getValueAt(row, 0);
+		aName= (String) table.getValueAt(row, 1);
 	}
 	
 	private void b_inActionPerformed(ActionEvent e) {
-		if(inId==0)
+		if(aName.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "请选择要加入的社团");
 			return;
 		}
-		UserAssoci ua=new UserAssoci(Logon.user.getId(),inId,"加入待审核");
+		int inId=0;
 		Connection con =null;
+		try {
+			con=dUtil.getCon();
+			ResultSet rs=aDao.checkName(con, aName);
+			while(rs.next())
+			{
+				inId=rs.getInt("ID");
+			}
+		}catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+		
+		UserAssoci ua=new UserAssoci(Logon.user.getId(),inId,"加入待审核");
 		try {
 			con=dUtil.getCon();
 			ResultSet rs=uaDao.check(con, ua);
@@ -221,5 +247,31 @@ public class searchAssoci extends JFrame {
 				e2.printStackTrace();
 			}
 		}
+	}
+	
+	private void b_bbsActionPerformed(ActionEvent e) {
+		if(aName.equals(""))
+		{
+			JOptionPane.showMessageDialog(null, "请选择要进入的社团论坛");
+			return;
+		}
+		Connection con =null;
+		int inId=0;
+		try {
+			con=dUtil.getCon();
+			ResultSet rs=aDao.checkName(con, aName);
+			while(rs.next())
+			{
+				inId=rs.getInt("ID");
+			}
+		}catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null, "申请发送失败，请重试");
+		}
+		this.dispose();
+		checkBBS cb=new checkBBS();
+		cb.fillTable(inId);
+		cb.setVisible(true);
 	}
 }

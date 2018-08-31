@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.Calendar;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -18,20 +19,20 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import dao.volunteerDao;
-import dao.voteDao;
-import model.Volunteer;
-import model.Vote;
+import dao.researchDao;
+import dao.topicDao;
+import model.Research;
+import model.Topic;
 import util.dbUtil;
 
-public class addVote extends JFrame {
-
+public class addTopic extends JFrame {
 	dbUtil dUtil=new dbUtil();
-    voteDao vDao=new voteDao();
+    topicDao tDao=new topicDao();
 
 	private JPanel contentPane;
 	private JTextField nameTxt;
-	private JTextField timeTxt;
+	private JTextField contentTxt;
+	private int aid;
 
 	/**
 	 * Launch the application.
@@ -40,7 +41,7 @@ public class addVote extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					addVote frame = new addVote();
+					addTopic frame = new addTopic();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -52,7 +53,7 @@ public class addVote extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public addVote() {
+	public addTopic() {
 		setResizable(false);
 		setTitle("\u793E\u56E2KeepOn");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,7 +76,7 @@ public class addVote extends JFrame {
 		p.setOpaque(false);
 		p.setBounds(0, 0, 1219, 866);
 		
-		JLabel label = new JLabel("\u6DFB\u52A0\u6295\u7968");
+		JLabel label = new JLabel("\u6DFB\u52A0\u5E16\u5B50");
 		label.setFont(new Font("字酷堂海藏楷体", Font.PLAIN, 30));
 		label.setBounds(269, 335, 196, 35);
 		contentPane.add(label);
@@ -108,13 +109,13 @@ public class addVote extends JFrame {
 		contentPane.add(nameTxt);
 		nameTxt.setColumns(10);
 		
-		timeTxt = new JTextField();
-		timeTxt.setFont(new Font("汉仪南宫体简", Font.PLAIN, 22));
-		timeTxt.setBounds(378, 481, 404, 144);
-		contentPane.add(timeTxt);
-		timeTxt.setColumns(10);
+		contentTxt = new JTextField();
+		contentTxt.setFont(new Font("汉仪南宫体简", Font.PLAIN, 22));
+		contentTxt.setBounds(378, 481, 404, 144);
+		contentPane.add(contentTxt);
+		contentTxt.setColumns(10);
 		
-		JButton b_add = new JButton("\u63D0\u4EA4\u6295\u7968");
+		JButton b_add = new JButton("\u53D1\u8868\u5E16\u5B50");
 		b_add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				b_addActionPerformed(e);
@@ -127,12 +128,14 @@ public class addVote extends JFrame {
 	
 	private void b_exitActionPerformed(ActionEvent e) {
 		this.dispose();
-		new manageVote().setVisible(true);
+		checkBBS cb=new checkBBS();
+		cb.fillTable(aid);
+		cb.setVisible(true);
 	}
 	
 	private void b_addActionPerformed(ActionEvent e) {
 		String name=nameTxt.getText();
-		String time=timeTxt.getText();
+		String content=contentTxt.getText();
 		
 		if(name.equals(""))
 		{
@@ -143,17 +146,17 @@ public class addVote extends JFrame {
 		ResultSet n_rs;
 		try {
 			con=dUtil.getCon();	
-			n_rs = vDao.checkName(con,name,Logon.associ.getId());
+			n_rs = tDao.checkName(con,name,aid);
 			while(n_rs.next())
 			{
-				JOptionPane.showMessageDialog(null, "投票标题不能重复");
+				JOptionPane.showMessageDialog(null, "帖子标题不能重复");
 				return;
 			}
 		} catch (Exception e3) {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
 		}
-		if(time.equals(""))
+		if(content.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "内容不能为空");
 			return;
@@ -162,10 +165,11 @@ public class addVote extends JFrame {
 		ResultSet rs;
 		try {
 			con=dUtil.getCon();	
-			rs = vDao.maxId(con);
+			rs = tDao.maxId(con);
 			while(rs.next())
 			{
-				id=rs.getInt("ID");			
+				id=rs.getInt("ID");
+				
 			}
 		} catch (Exception e3) {
 			// TODO Auto-generated catch block
@@ -174,25 +178,31 @@ public class addVote extends JFrame {
 		
 		if(id==0)
 			id=1;
-		Vote v=new Vote(id,name,time,Logon.associ.getId());
+		int y,m,d;  
+        Calendar cal=Calendar.getInstance();    
+        y=cal.get(Calendar.YEAR);    
+        m=cal.get(Calendar.MONTH)+1;    
+        d=cal.get(Calendar.DATE); 
+        String time=y+"."+m+"."+d;
+		Topic t=new Topic(id,name,content,time,Logon.user.getId(),aid);
 		try
 		{
 			con=dUtil.getCon();		
-			int n=vDao.add(con, v);
+			int n=tDao.add(con, t);
 			if(n==1)
 			{
-				JOptionPane.showMessageDialog(null, "投票调查成功");
+				JOptionPane.showMessageDialog(null, "帖子添加成功");
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(null, "投票调查失败");
+				JOptionPane.showMessageDialog(null, "帖子添加失败");
 			}
 			
 		}
 		catch(Exception e1)
 		{
 			e1.printStackTrace();
-			JOptionPane.showMessageDialog(null, "投票调查失败");
+			JOptionPane.showMessageDialog(null, "帖子添加失败");
 		}
 		finally
 		{
@@ -204,6 +214,11 @@ public class addVote extends JFrame {
 			}
 		}
 		
+	}
+	
+	public void aid(int a)
+	{
+		aid=a;
 	}
 
 }

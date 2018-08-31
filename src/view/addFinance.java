@@ -155,6 +155,20 @@ public class addFinance extends JFrame {
 			JOptionPane.showMessageDialog(null, "款项名称不能为空");
 			return;
 		}
+		Connection con=null;
+		ResultSet n_rs;
+		try {
+			con=dUtil.getCon();	
+			n_rs = fDao.checkName(con,name,Logon.associ.getId());
+			while(n_rs.next())
+			{
+				JOptionPane.showMessageDialog(null, "款项名称不能重复");
+				return;
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
 		if(in_name.equals(""))
 		{           
 			in_name=0+"";
@@ -186,7 +200,6 @@ public class addFinance extends JFrame {
 			JOptionPane.showMessageDialog(null, "总额不足");
 			return;
 		}
-		Connection con=null;
 		Finance fi=new Finance(name,in,out,Logon.associ.getId());
 		try
 		{

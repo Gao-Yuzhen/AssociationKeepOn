@@ -32,7 +32,7 @@ public class activityDao {
 		return pstmt.executeQuery();
 	}
 	
-	public ResultSet acList(Connection con,int aId,String n) throws Exception
+	public ResultSet myAcList(Connection con,int aId,String n) throws Exception
 	{
 		StringBuffer sb=new StringBuffer ("select Name,Time,Status from activityproject");
 		if(!StringUtil.isEmpty(n))
@@ -42,6 +42,17 @@ public class activityDao {
 		sb.append(" and Association_ID=?");
 		PreparedStatement pstmt=con.prepareStatement(sb.toString().replaceFirst("and", "where"));
 		pstmt.setInt(1, aId);
+		return pstmt.executeQuery();
+	}
+	
+	public ResultSet acList(Connection con,String n) throws Exception
+	{
+		StringBuffer sb=new StringBuffer ("select Name,Time,Association_ID,Status from activityproject");
+		if(!StringUtil.isEmpty(n))
+		{
+			sb.append(" and Name like '%"+n+"%'");
+		}
+		PreparedStatement pstmt=con.prepareStatement(sb.toString().replaceFirst("and", "where"));
 		return pstmt.executeQuery();
 	}
 	
@@ -84,28 +95,32 @@ public class activityDao {
 	    return pstmt.executeUpdate();
 	}
 
-	public ResultSet checkStatus(Connection con,String n)throws Exception
+	public ResultSet checkStatus(Connection con,String n,int aid)throws Exception
 	{
-		String sql="select Status from activityproject where Name=?";
+		String sql="select Status from activityproject where Name=? and Association_ID=?";
 		PreparedStatement pstmt=con.prepareStatement(sql);
 		pstmt.setString(1, n);
+	   	pstmt.setInt(2, aid);
 		return pstmt.executeQuery();
 	}
 	
-	public int updateStatus(Connection con,String status,String n)throws Exception
+	public int updateStatus(Connection con,String status,String n,int aid)throws Exception
 	{
-		String sql="update activityproject set Status=? where Name=?";
+		String sql="update activityproject set Status=? where Name=? and Association_ID=?";
 		PreparedStatement pstmt=con.prepareStatement(sql);
 		pstmt.setString(1, status);
 		pstmt.setString(2, n);
+	   	pstmt.setInt(3, aid);
 		return pstmt.executeUpdate();
 	}
 	
-	public int delete(Connection con,String n) throws Exception
+	
+	public ResultSet checkName(Connection con,String n,int aid)throws Exception
 	{
-	    String sql="delete from activityproject where Name=?";
-	    PreparedStatement pstmt=con.prepareStatement(sql);
-	   	pstmt.setString(1, n);
-	    return pstmt.executeUpdate();
+		String sql="select ID from activityproject where Name=? and Association_ID=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1,n);
+		pstmt.setInt(2, aid);
+		return pstmt.executeQuery();
 	}
 }

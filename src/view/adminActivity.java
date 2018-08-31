@@ -26,17 +26,20 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import dao.activityDao;
+import dao.associDao;
 import util.dbUtil;
 
 public class adminActivity extends JFrame {
 
 	dbUtil dUtil=new dbUtil();
 	activityDao acDao=new activityDao();
+	associDao aDao=new associDao();
 	private JPanel contentPane;
 	private JTable acTable;
 	private JScrollPane acList;
 	private String mName;
 	private JTextField searchTxt;
+	private String aName;
 
 	/**
 	 * Launch the application.
@@ -106,13 +109,14 @@ public class adminActivity extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"\u7F16\u53F7", "\u6D3B\u52A8\u540D\u79F0", "\u65F6\u95F4", "\u72B6\u6001"
+				"\u7F16\u53F7", "\u6D3B\u52A8\u540D\u79F0", "\u65F6\u95F4", "\u793E\u56E2","\u72B6\u6001"
 			}
 		));
 		acTable.getColumnModel().getColumn(0).setPreferredWidth(60);
 		acTable.getColumnModel().getColumn(1).setPreferredWidth(287);
 		acTable.getColumnModel().getColumn(2).setPreferredWidth(120);
 		acTable.getColumnModel().getColumn(3).setPreferredWidth(140);
+		acTable.getColumnModel().getColumn(4).setPreferredWidth(140);
 		acTable.setRowHeight(30);
 		acTable.getTableHeader().setVisible(true); 
 		acTable.setBounds(273, 339, 607, 289);
@@ -177,14 +181,22 @@ public class adminActivity extends JFrame {
 		try
 		{
 			con=dUtil.getCon();
-			ResultSet rs=acDao.acList(con, adId,searchTxt.getText());
+			ResultSet rs=acDao.acList(con,searchTxt.getText());
 			while(rs.next())
 			{
 				Vector v=new Vector();
+				int aid=rs.getInt("Association_ID");
+				aName="";
+				ResultSet nrs=aDao.checkId(con,aid);
+				while(nrs.next())
+				{
+					aName=nrs.getString("Name");
+				}
 				v.add(x);
 				x++;
 				v.add(rs.getString("Name"));
 				v.add(rs.getString("Time"));
+				v.add(aName);
 				v.add(rs.getString("Status"));
 				dtm.addRow(v);
 			}
@@ -207,6 +219,7 @@ public class adminActivity extends JFrame {
 	private void acTableMousePressed(MouseEvent e) {
 		int row=acTable.getSelectedRow();
 		mName= (String) acTable.getValueAt(row, 1);
+		aName=(String)acTable.getValueAt(row, 3);
 	}
 	
 	private void b_exitActionPerformed(ActionEvent e) {
@@ -223,7 +236,13 @@ public class adminActivity extends JFrame {
 		Connection con =null;
 		try {
 			con=dUtil.getCon();
-			ResultSet rs=acDao.checkStatus(con, mName);
+			ResultSet nrs=aDao.checkName(con, aName);
+			int aid=0;
+			while(nrs.next())
+			{
+				aid=nrs.getInt("ID");
+			}
+			ResultSet rs=acDao.checkStatus(con, mName,aid);
 			while(rs.next())
 			{
 				if(rs.getString("Status").equals("申请已通过"))
@@ -233,7 +252,7 @@ public class adminActivity extends JFrame {
 				}
 					
 			}
-			int n=acDao.updateStatus(con, "申请已通过",mName);
+			int n=acDao.updateStatus(con, "申请已通过",mName,aid);
 			if(n==1)
 			{
 				JOptionPane.showMessageDialog(null, "申请通过成功");
@@ -267,7 +286,13 @@ public class adminActivity extends JFrame {
 		Connection con =null;
 		try {
 			con=dUtil.getCon();
-			ResultSet rs=acDao.checkStatus(con, mName);
+			ResultSet nrs=aDao.checkName(con, aName);
+			int aid=0;
+			while(nrs.next())
+			{
+				aid=nrs.getInt("ID");
+			}
+			ResultSet rs=acDao.checkStatus(con, mName,aid);
 			while(rs.next())
 			{
 				if(rs.getString("Status").equals("申请待审核"))
@@ -277,7 +302,7 @@ public class adminActivity extends JFrame {
 				}
 					
 			}
-			int n=acDao.delete(con,mName);
+			int n=acDao.cancelAc(con,aid,mName);
 			if(n==1)
 			{
 				JOptionPane.showMessageDialog(null, "终止活动成功");

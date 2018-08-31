@@ -21,6 +21,8 @@ import javax.swing.table.DefaultTableModel;
 
 import dao.activityDao;
 import dao.associDao;
+import dao.commentDao;
+import dao.topicDao;
 import dao.userAssociDao;
 import dao.userDao;
 import util.dbUtil;
@@ -38,10 +40,12 @@ public class adminUser extends JFrame {
 	userAssociDao uaDao=new userAssociDao();
 	activityDao acDao=new activityDao();
 	userDao uDao=new userDao();
+	commentDao cDao=new commentDao();
+	topicDao tDao=new topicDao();
 	private JPanel contentPane;
 	private JScrollPane uList;
 	private JTable uTable;
-	private String sid;
+	private String uName;
 	private JTextField searchTxt;
 
 	/**
@@ -64,7 +68,7 @@ public class adminUser extends JFrame {
 	 * Create the frame.
 	 */
 	public adminUser() {
-		sid="";
+		uName="";
 		setResizable(false);
 		setTitle("\u793E\u56E2KeepOn");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -207,11 +211,11 @@ public class adminUser extends JFrame {
 	
 	private void uTableMousePressed(MouseEvent e) {
 		int row=uTable.getSelectedRow();
-		sid= (String) uTable.getValueAt(row, 3);
+		uName= (String) uTable.getValueAt(row, 1);
 	}
 	
 	private void b_outActionPerformed(ActionEvent e) {
-		if(sid.equals(""))
+		if(uName.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "请选择要注销的用户");
 			return;
@@ -221,18 +225,27 @@ public class adminUser extends JFrame {
 			con=dUtil.getCon();
 			int mem=0;
 			Vector v=new Vector();
-			ResultSet rs=uaDao.myAssoci(con, sid);
+			Vector v2=new Vector();
+			ResultSet rs=uaDao.myAssoci(con, uName);
 			while(rs.next())
 			{
-				v.add(rs.getInt("Association_ID"));				
+				v.add(rs.getInt("Association_ID"));	
 			}
-			int x=uaDao.userDelete(con, sid);
-			if(x==0)
+			uaDao.userDelete(con, uName);
+			ResultSet trs=tDao.myTopic(con, uName);
+			while(trs.next())
 			{
-				JOptionPane.showMessageDialog(null, "注销用户失败");
-				return;
+				v2.add(trs.getInt("ID"));	
 			}
-			int n=uDao.deleteUser(con,sid);			
+			for(int i=0;i<v2.size();i++) 
+			{
+				int tId=(int) v2.get(i);
+			    cDao.topicDelete(con,tId);
+			}
+			cDao.userDelete(con, uName);
+			tDao.userDelete(con,uName);
+
+			int n=uDao.deleteUser(con,uName);			
 			if(n==1)
 			{
 				JOptionPane.showMessageDialog(null, "注销用户成功");

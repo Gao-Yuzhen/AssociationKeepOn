@@ -25,11 +25,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import dao.topicDao;
-import dao.userAssociDao;
 import dao.userDao;
+import model.Association;
 import util.dbUtil;
 
-public class manageBBS extends JFrame {
+public class checkBBS extends JFrame {
 
 	dbUtil dUtil=new dbUtil();
 	topicDao tDao=new topicDao();
@@ -38,6 +38,9 @@ public class manageBBS extends JFrame {
 	private JTable topicTable;
 	private JTextField searchTxt;
 	private String name;
+	private int aid;
+	private String aname;
+
 	/**
 	 * Launch the application.
 	 */
@@ -45,7 +48,7 @@ public class manageBBS extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					manageBBS frame = new manageBBS();
+					checkBBS frame = new checkBBS();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -57,7 +60,7 @@ public class manageBBS extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public manageBBS() {
+	public checkBBS() {
 		name="";
 		setResizable(false);
 		setTitle("\u793E\u56E2KeepOn");
@@ -114,7 +117,7 @@ public class manageBBS extends JFrame {
 		topicList.setViewportView(topicTable);
 	
 		
-		JButton b_exit = new JButton("\u9000\u56DE\u9996\u9875");
+		JButton b_exit = new JButton("\u9000\u56DE\u4E0A\u9875");
 		b_exit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				b_exitActionPerformed(e);
@@ -123,15 +126,15 @@ public class manageBBS extends JFrame {
 		b_exit.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
 		b_exit.setBounds(916, 274, 130, 35);
 		contentPane.add(b_exit);
-		JButton b_out = new JButton("\u5220\u9664\u5E16\u5B50");
-		b_out.addActionListener(new ActionListener() {
+		JButton b_add = new JButton("\u53D1\u8868\u5E16\u5B50");
+		b_add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				b_outActionPerformed(e);
+				b_addActionPerformed(e);
 			}
 		});
-		b_out.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
-		b_out.setBounds(916, 398, 130, 35);
-		contentPane.add(b_out);
+		b_add.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
+		b_add.setBounds(916, 398, 130, 35);
+		contentPane.add(b_add);
 		
 		searchTxt = new JTextField();
 		searchTxt.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 22));
@@ -165,11 +168,11 @@ public class manageBBS extends JFrame {
 		b_comment.setBounds(916, 336, 130, 35);
 		contentPane.add(b_comment);
 		
-		fillTable(Logon.associ.getId());
 	}
 	
 	public void fillTable(int aId)
 	{
+		aid=aId;
 		int x=1;
 		DefaultTableModel dtm=(DefaultTableModel) topicTable.getModel();
 		Connection con=null;
@@ -213,7 +216,11 @@ public class manageBBS extends JFrame {
 	
 	private void b_exitActionPerformed(ActionEvent e) {
 		this.dispose();
-		new A_main().setVisible(true);
+		searchAssoci s_associ=new searchAssoci();
+		Association a=new Association();
+		a.setName(Main.sTxt());
+		s_associ.fillTable(a);
+		s_associ.setVisible(true);
 	}
 	
 	private void topicTableMousePressed(MouseEvent e) {
@@ -221,43 +228,15 @@ public class manageBBS extends JFrame {
 		name= (String) topicTable.getValueAt(row, 1);
 	}
 	
-	private void b_outActionPerformed(ActionEvent e) {
-		if(name.equals(""))
-		{
-			JOptionPane.showMessageDialog(null, "ÇëÑ¡ÔñÒªÉ¾³ýµÄÌû×Ó");
-			return;
-		}
-		Connection con =null;
-		try {
-			con=dUtil.getCon();
-			int n=tDao.delete(con, Logon.associ.getId(),name);
-			if(n==1)
-			{
-				JOptionPane.showMessageDialog(null, "É¾³ýÌû×Ó³É¹¦");
-				fillTable(Logon.associ.getId());
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(null, "É¾³ýÌû×ÓÊ§°Ü");
-			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			JOptionPane.showMessageDialog(null, "É¾³ýÌû×ÓÊ§°Ü");
-		}
-		finally
-		{
-			try {
-				dUtil.closeCon(con);
-			} catch (Exception e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-		}
+	private void b_addActionPerformed(ActionEvent e) {
+		this.dispose();
+		addTopic at=new addTopic();
+		at.aid(aid);
+		at.setVisible(true);
 	}
 	
 	private void b_searchActionPerformed(ActionEvent arg0) {
-		fillTable(Logon.associ.getId());
+		fillTable(aid);
 	}
 	
 	private void b_commentActionPerformed(ActionEvent e) {
@@ -267,9 +246,14 @@ public class manageBBS extends JFrame {
 			return;
 		}
 		this.dispose();
-		checkComment cc=new checkComment();
-		cc.topic_id(name);
-		cc.fillTable();
-		cc.setVisible(true);
+		addComment ac=new addComment();
+		ac.topic_id(name,aid);
+		ac.fillTable();
+		ac.setVisible(true);
+	}
+	
+	public void aname(String an)
+	{
+		aname=an;
 	}
 }

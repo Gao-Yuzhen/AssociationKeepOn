@@ -139,12 +139,25 @@ public class addSearch extends JFrame {
 			JOptionPane.showMessageDialog(null, "标题不能为空");
 			return;
 		}
+		Connection con=null;
+		ResultSet n_rs;
+		try {
+			con=dUtil.getCon();	
+			n_rs = rDao.checkName(con,name,Logon.associ.getId());
+			while(n_rs.next())
+			{
+				JOptionPane.showMessageDialog(null, "调查标题不能重复");
+				return;
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
 		if(content.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "内容不能为空");
 			return;
 		}
-		Connection con=null;
 		int id=0;
 		ResultSet rs;
 		try {

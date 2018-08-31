@@ -193,9 +193,24 @@ public class RegisterAssoci extends JFrame {
 		String leader=leaderTxt.getText();
 		if(name.equals(""))
 		{
-			JOptionPane.showMessageDialog(null, "用户名不能为空");
+			JOptionPane.showMessageDialog(null, "社团名不能为空");
 			return;
 		}
+		Connection con=null;
+		ResultSet n_rs;
+		try {
+			con=dUtil.getCon();	
+			n_rs = aDao.checkName(con,name);
+			while(n_rs.next())
+			{
+				JOptionPane.showMessageDialog(null, "社团名已被占用");
+				return;
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+		
 		if(password.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "密码不能为空");
@@ -216,7 +231,6 @@ public class RegisterAssoci extends JFrame {
 			JOptionPane.showMessageDialog(null, "会长不能为空");
 			return;
 		}
-		Connection con=null;
 		int id=0;
 		ResultSet rs;
 		try {

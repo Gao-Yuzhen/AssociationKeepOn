@@ -35,11 +35,12 @@ public class financeDao {
 		return pstmt.executeQuery();
 	}
 	
-	public ResultSet fTotal(Connection con,String name) throws Exception
+	public ResultSet fTotal(Connection con,String name,int aid) throws Exception
 	{
-		String sql="select Total from finance where Name=?";
+		String sql="select Total from finance where Name=? and Association_ID=?";
 		PreparedStatement pstmt=con.prepareStatement(sql);
 		pstmt.setString(1, name);
+		pstmt.setInt(2, aid);
 		return pstmt.executeQuery();
 	}
 
@@ -71,5 +72,14 @@ public class financeDao {
 		pstmt.setInt(4, f.getTotal());
 		pstmt.setInt(5, f.getId());
 		return pstmt.executeUpdate();
+	}
+	
+	public ResultSet checkName(Connection con,String n,int aId)throws Exception
+	{
+		String sql="select ID from finance where Name=? and Association_ID=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1,n);
+		pstmt.setInt(2, aId);
+		return pstmt.executeQuery();
 	}
 }

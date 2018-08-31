@@ -188,7 +188,7 @@ public class manageActivity extends JFrame {
 		try
 		{
 			con=dUtil.getCon();
-			ResultSet rs=acDao.acList(con, aId,searchTxt.getText());
+			ResultSet rs=acDao.myAcList(con, aId,searchTxt.getText());
 			while(rs.next())
 			{
 				Vector v=new Vector();

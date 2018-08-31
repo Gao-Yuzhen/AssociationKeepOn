@@ -175,6 +175,11 @@ public class A_main extends JFrame {
 		contentPane.add(b_search);
 		
 		JButton b_bbs = new JButton("\u793E\u56E2BBS");
+		b_bbs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				b_bbsActionPerformed(e);
+			}
+		});
 		b_bbs.setFont(new Font("汉仪南宫体简", Font.PLAIN, 20));
 		b_bbs.setBounds(944, 491, 165, 37);
 		contentPane.add(b_bbs);
@@ -285,6 +290,16 @@ public class A_main extends JFrame {
 		{
 			this.dispose();
 		    new manageSearch().setVisible(true);
+		}
+		else
+			JOptionPane.showMessageDialog(null, "社团还未成立，不能使用该功能");
+	}
+	
+	private void b_bbsActionPerformed(ActionEvent e) {
+		if(Logon.associ.getStatus().equals("正式社团"))
+		{
+			this.dispose();
+		    new manageBBS().setVisible(true);
 		}
 		else
 			JOptionPane.showMessageDialog(null, "社团还未成立，不能使用该功能");

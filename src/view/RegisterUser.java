@@ -209,6 +209,20 @@ public class RegisterUser extends JFrame {
 			JOptionPane.showMessageDialog(null, "用户名不能为空");
 			return;
 		}
+		Connection con=null;
+		ResultSet n_rs;
+		try {
+			con=dUtil.getCon();	
+			n_rs = uDao.checkName(con,name);
+			while(n_rs.next())
+			{
+				JOptionPane.showMessageDialog(null, "用户名已被占用");
+				return;
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
 		if(email.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "学号不能为空");
@@ -229,7 +243,6 @@ public class RegisterUser extends JFrame {
 			JOptionPane.showMessageDialog(null, "两次输入的密码不一致");
 			return;
 		}
-		Connection con=null;
 		int id=0;
 		ResultSet rs;
 		try {

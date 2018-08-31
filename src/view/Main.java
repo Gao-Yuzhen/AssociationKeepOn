@@ -28,6 +28,7 @@ public class Main extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField s_associTxt;
+	private static String sTxt;
 
 	/**
 	 * Launch the application.
@@ -91,6 +92,7 @@ public class Main extends JFrame {
 		contentPane.add(lblNewLabel);
 		
 		s_associTxt = new JTextField();
+		s_associTxt.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 24));
 		s_associTxt.setBounds(471, 462, 211, 35);
 		contentPane.add(s_associTxt);
 		s_associTxt.setColumns(10);
@@ -180,7 +182,7 @@ public class Main extends JFrame {
 	
 	private void b_searchActionPerformed(ActionEvent arg0) {
 		this.dispose();
-		String sTxt=s_associTxt.getText();
+		sTxt=s_associTxt.getText();
 		searchAssoci s_associ=new searchAssoci();
 		Association a=new Association();
 		a.setName(sTxt);
@@ -207,5 +209,10 @@ public class Main extends JFrame {
 	private void m_manageAActionPerformed(ActionEvent e) {
 		this.dispose();
 		new manageAssoci().setVisible(true);
+	}
+	
+	public static String sTxt()
+	{
+		return sTxt;
 	}
 }

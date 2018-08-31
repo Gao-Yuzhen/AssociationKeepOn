@@ -50,4 +50,13 @@ public class volunteerDao {
 	    pstmt.setString(2, name);
 	    return pstmt.executeUpdate();
 	}
+	
+	public ResultSet checkName(Connection con,String n,int aId)throws Exception
+	{
+		String sql="select ID from research where Name=? and Association_ID=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1,n);
+		pstmt.setInt(2, aId);
+		return pstmt.executeQuery();
+	}
 }

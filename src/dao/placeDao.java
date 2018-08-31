@@ -60,4 +60,12 @@ public class placeDao {
 		return pstmt.executeUpdate();
 	}
 	
+	public ResultSet checkName(Connection con,String n)throws Exception
+	{
+		String sql="select ID from activityplace where Name=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1,n);
+		return pstmt.executeQuery();
+	}
+	
 }

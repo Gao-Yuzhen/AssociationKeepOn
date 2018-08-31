@@ -130,7 +130,7 @@ public class manageAssoci extends JFrame {
 			}
 		});
 		b_out.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
-		b_out.setBounds(916, 338, 130, 35);
+		b_out.setBounds(916, 336, 130, 35);
 		contentPane.add(b_out);
 		
 		searchTxt = new JTextField();

@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.ResultSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -161,8 +162,25 @@ public class modifyFinance extends JFrame {
 		String out_name=outTxt.getText();
 		if(name.equals(""))
 		{
-			JOptionPane.showMessageDialog(null, "活动名称不能为空");
+			JOptionPane.showMessageDialog(null, "款项名称不能为空");
 			return;
+		}
+		Connection con=null;
+		ResultSet n_rs;
+		try {
+			con=dUtil.getCon();	
+			n_rs = fDao.checkName(con,name,Logon.associ.getId());
+			while(n_rs.next())
+			{
+				if(n_rs.getInt("ID")!=fId)
+				{
+					JOptionPane.showMessageDialog(null, "款项名称不能重复");
+					return;
+				}
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
 		}
 		if(in_name.equals(""))
 		{           
@@ -194,7 +212,6 @@ public class modifyFinance extends JFrame {
 			JOptionPane.showMessageDialog(null, "总额不足");
 			return;
 		}
-		Connection con=null;
 		try
 		{
 			con=dUtil.getCon();

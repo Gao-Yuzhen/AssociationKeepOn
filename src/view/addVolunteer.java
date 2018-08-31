@@ -153,6 +153,20 @@ public class addVolunteer extends JFrame {
 			JOptionPane.showMessageDialog(null, "服务名称不能为空");
 			return;
 		}
+		Connection con=null;
+		ResultSet n_rs;
+		try {
+			con=dUtil.getCon();	
+			n_rs = volDao.checkName(con,name,Logon.associ.getId());
+			while(n_rs.next())
+			{
+				JOptionPane.showMessageDialog(null, "回帖内容不能重复");
+				return;
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
 		if(time.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "时间不能为空");
@@ -163,7 +177,6 @@ public class addVolunteer extends JFrame {
 			JOptionPane.showMessageDialog(null, "人员容量不能为空");
 			return;
 		}
-		Connection con=null;
 		int id=0;
 		ResultSet rs;
 		try {

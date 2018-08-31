@@ -248,7 +248,7 @@ public class manageFinance extends JFrame {
 		Connection con =null;
 		try {
 			con=dUtil.getCon();
-			ResultSet rs=fDao.fTotal(con,mouseName);
+			ResultSet rs=fDao.fTotal(con,mouseName,Logon.associ.getId());
 			int m=0;
 			while(rs.next())
 			{

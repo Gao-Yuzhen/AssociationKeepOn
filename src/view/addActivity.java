@@ -194,6 +194,20 @@ public class addActivity extends JFrame {
 			JOptionPane.showMessageDialog(null, "活动名称不能为空");
 			return;
 		}
+		Connection con=null;
+		ResultSet n_rs;
+		try {
+			con=dUtil.getCon();	
+			n_rs = acDao.checkName(con,name,Logon.associ.getId());
+			while(n_rs.next())
+			{
+				JOptionPane.showMessageDialog(null, "活动名不能重复");
+				return;
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
 		if(time.equals(""))
 		{
 			JOptionPane.showMessageDialog(null, "活动时间不能为空");
@@ -204,7 +218,6 @@ public class addActivity extends JFrame {
 			JOptionPane.showMessageDialog(null, "活动地点不能为空");
 			return;
 		}	
-		Connection con=null;
 		try {
 			con=dUtil.getCon();	
 			ResultSet rs = pDao.checkStatus(con,place);

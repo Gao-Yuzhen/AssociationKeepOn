@@ -24,20 +24,24 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import dao.commentDao;
 import dao.topicDao;
-import dao.userAssociDao;
 import dao.userDao;
 import util.dbUtil;
 
-public class manageBBS extends JFrame {
+public class checkComment extends JFrame {
 
 	dbUtil dUtil=new dbUtil();
+	commentDao cDao=new commentDao();
 	topicDao tDao=new topicDao();
 	userDao uDao=new userDao();
 	private JPanel contentPane;
-	private JTable topicTable;
-	private JTextField searchTxt;
+	private JTable commentTable;
+	private int tid;
 	private String name;
+	private JLabel label_title;
+	private JLabel label_content;
+
 	/**
 	 * Launch the application.
 	 */
@@ -45,7 +49,7 @@ public class manageBBS extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					manageBBS frame = new manageBBS();
+					checkComment frame = new checkComment();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -57,7 +61,7 @@ public class manageBBS extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public manageBBS() {
+	public checkComment() {
 		name="";
 		setResizable(false);
 		setTitle("\u793E\u56E2KeepOn");
@@ -81,40 +85,40 @@ public class manageBBS extends JFrame {
 		p.setOpaque(false);
 		p.setBounds(0, 0, 1219, 866);
 		
-		JScrollPane topicList = new JScrollPane();
-		topicList.setBounds(273, 375, 607, 289);
-		contentPane.add(topicList);
+		JScrollPane commentList = new JScrollPane();
+		commentList.setBounds(273, 375, 607, 289);
+		contentPane.add(commentList);
 		
-		topicTable = new JTable();
-		topicTable.addMouseListener(new MouseAdapter() {
+		commentTable = new JTable();
+		commentTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				topicTableMousePressed(e);
+				commentTableMousePressed(e);
 			}
 		});
-		topicTable.setModel(new DefaultTableModel(
+		commentTable.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
 			new String[] {
-				"\u7F16\u53F7", "\u6807\u9898", "\u53D1\u5E16\u4EBA", "\u65F6\u95F4"
+				"\u7F16\u53F7", "\u56DE\u5E16", "\u56DE\u5E16\u4EBA", "\u65F6\u95F4"
 			}
 		));
-		topicTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		topicTable.getColumnModel().getColumn(1).setPreferredWidth(277);
-		topicTable.getColumnModel().getColumn(2).setPreferredWidth(120);
-		topicTable.getColumnModel().getColumn(3).setPreferredWidth(130);
-		topicTable.setRowHeight(30);
-		topicTable.getTableHeader().setVisible(true); 
-		topicTable.setBounds(273, 339, 607, 289);
-		topicTable.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
-		topicTable.getTableHeader().setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
+		commentTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+		commentTable.getColumnModel().getColumn(1).setPreferredWidth(277);
+		commentTable.getColumnModel().getColumn(2).setPreferredWidth(120);
+		commentTable.getColumnModel().getColumn(3).setPreferredWidth(130);
+		commentTable.setRowHeight(30);
+		commentTable.getTableHeader().setVisible(true); 
+		commentTable.setBounds(273, 339, 607, 289);
+		commentTable.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
+		commentTable.getTableHeader().setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
 		DefaultTableCellRenderer r = new DefaultTableCellRenderer();   
 		r.setHorizontalAlignment(JLabel.CENTER);   
-		topicTable.setDefaultRenderer(Object.class, r);
-		topicList.setViewportView(topicTable);
+		commentTable.setDefaultRenderer(Object.class, r);
+		commentList.setViewportView(commentTable);
 	
 		
-		JButton b_exit = new JButton("\u9000\u56DE\u9996\u9875");
+		JButton b_exit = new JButton("\u9000\u56DE\u4E0A\u9875");
 		b_exit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				b_exitActionPerformed(e);
@@ -123,61 +127,48 @@ public class manageBBS extends JFrame {
 		b_exit.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
 		b_exit.setBounds(916, 274, 130, 35);
 		contentPane.add(b_exit);
-		JButton b_out = new JButton("\u5220\u9664\u5E16\u5B50");
+		JButton b_out = new JButton("\u5220\u9664\u56DE\u5E16");
 		b_out.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				b_outActionPerformed(e);
 			}
 		});
 		b_out.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
-		b_out.setBounds(916, 398, 130, 35);
+		b_out.setBounds(916, 336, 130, 35);
 		contentPane.add(b_out);
 		
-		searchTxt = new JTextField();
-		searchTxt.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 22));
-		searchTxt.setBounds(416, 317, 285, 32);
-		contentPane.add(searchTxt);
-		searchTxt.setColumns(10);
-		
-		JLabel label = new JLabel("\u67E5\u8BE2\u5E16\u5B50");
+		JLabel label = new JLabel("\u6807\u9898");
 		label.setFont(new Font("×Ö¿áÌÃº£²Ø¿¬Ìå", Font.PLAIN, 30));
-		label.setBounds(273, 315, 196, 35);
+		label.setBounds(295, 288, 196, 35);
 		contentPane.add(label);
 		
-		JButton b_search = new JButton("");
-		b_search.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				b_searchActionPerformed(arg0);
-			}
-		});
-		b_search.setBounds(720, 316, 33, 33);
-		contentPane.add(b_search);
-		ImageIcon i_search = new ImageIcon("src/icon/search.png");
-		b_search.setIcon(i_search);
+		label_title = new JLabel("");
+		label_title.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 22));
+		label_title.setBounds(369, 289, 286, 32);
+		contentPane.add(label_title);
 		
-		JButton b_comment = new JButton("\u67E5\u770B\u56DE\u5E16");
-		b_comment.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 20));
-		b_comment.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				b_commentActionPerformed(e);
-			}
-		});
-		b_comment.setBounds(916, 336, 130, 35);
-		contentPane.add(b_comment);
+		JLabel label_1 = new JLabel("\u5185\u5BB9");
+		label_1.setFont(new Font("×Ö¿áÌÃº£²Ø¿¬Ìå", Font.PLAIN, 30));
+		label_1.setBounds(295, 338, 81, 21);
+		contentPane.add(label_1);
 		
-		fillTable(Logon.associ.getId());
+		label_content = new JLabel("");
+		label_content.setFont(new Font("ººÒÇÄÏ¹¬Ìå¼ò", Font.PLAIN, 22));
+		label_content.setBounds(369, 333, 422, 32);
+		contentPane.add(label_content);
+		
 	}
 	
-	public void fillTable(int aId)
+    public void fillTable()
 	{
 		int x=1;
-		DefaultTableModel dtm=(DefaultTableModel) topicTable.getModel();
+		DefaultTableModel dtm=(DefaultTableModel) commentTable.getModel();
 		Connection con=null;
 		dtm.setRowCount(0);
 		try
 		{
 			con=dUtil.getCon();
-			ResultSet rs=tDao.topicList(con, aId,searchTxt.getText());
+			ResultSet rs=cDao.commentList(con, tid);
 			while(rs.next())
 			{
 				int uid=rs.getInt("User_ID");
@@ -190,7 +181,7 @@ public class manageBBS extends JFrame {
 				Vector v=new Vector();
 				v.add(x);
 				x++;
-				v.add(rs.getString("Title"));
+				v.add(rs.getString("Content"));
 				v.add(uname);
 				v.add(rs.getString("Time"));
 				dtm.addRow(v);
@@ -213,37 +204,37 @@ public class manageBBS extends JFrame {
 	
 	private void b_exitActionPerformed(ActionEvent e) {
 		this.dispose();
-		new A_main().setVisible(true);
+		new manageBBS().setVisible(true);
 	}
 	
-	private void topicTableMousePressed(MouseEvent e) {
-		int row=topicTable.getSelectedRow();
-		name= (String) topicTable.getValueAt(row, 1);
+	private void commentTableMousePressed(MouseEvent e) {
+		int row=commentTable.getSelectedRow();
+		name= (String) commentTable.getValueAt(row, 1);
 	}
 	
 	private void b_outActionPerformed(ActionEvent e) {
 		if(name.equals(""))
 		{
-			JOptionPane.showMessageDialog(null, "ÇëÑ¡ÔñÒªÉ¾³ýµÄÌû×Ó");
+			JOptionPane.showMessageDialog(null, "ÇëÑ¡ÔñÒªÉ¾³ýµÄ»ØÌû");
 			return;
 		}
 		Connection con =null;
 		try {
 			con=dUtil.getCon();
-			int n=tDao.delete(con, Logon.associ.getId(),name);
+			int n=cDao.delete(con, tid,name);
 			if(n==1)
 			{
-				JOptionPane.showMessageDialog(null, "É¾³ýÌû×Ó³É¹¦");
-				fillTable(Logon.associ.getId());
+				JOptionPane.showMessageDialog(null, "É¾³ý»ØÌû³É¹¦");
+				fillTable();
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(null, "É¾³ýÌû×ÓÊ§°Ü");
+				JOptionPane.showMessageDialog(null, "É¾³ý»ØÌûÊ§°Ü");
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			JOptionPane.showMessageDialog(null, "É¾³ýÌû×ÓÊ§°Ü");
+			JOptionPane.showMessageDialog(null, "É¾³ý»ØÌûÊ§°Ü");
 		}
 		finally
 		{
@@ -256,20 +247,32 @@ public class manageBBS extends JFrame {
 		}
 	}
 	
-	private void b_searchActionPerformed(ActionEvent arg0) {
-		fillTable(Logon.associ.getId());
-	}
-	
-	private void b_commentActionPerformed(ActionEvent e) {
-		if(name.equals(""))
-		{
-			JOptionPane.showMessageDialog(null, "ÇëÑ¡ÔñÒª²é¿´µÄÌû×Ó");
-			return;
+	public void topic_id(String n)
+	{
+	    label_title.setText(n);
+	    Connection con =null;
+		try {
+			con=dUtil.getCon();
+		    ResultSet rs=tDao.checkTid(con, n,Logon.associ.getId());
+			while(rs.next())
+			{
+				tid=rs.getInt("ID");
+				label_content.setText(rs.getString("Content"));
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		this.dispose();
-		checkComment cc=new checkComment();
-		cc.topic_id(name);
-		cc.fillTable();
-		cc.setVisible(true);
+		finally
+		{
+			try {
+				dUtil.closeCon(con);
+			} catch (Exception e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		}
+
+	    
 	}
 }

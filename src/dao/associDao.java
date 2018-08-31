@@ -123,7 +123,7 @@ public class associDao {
 	
 	public ResultSet checkStatus(Connection con,int aId)throws Exception
 	{
-		String sql="select Status from association where Name=?";
+		String sql="select Status from association where ID=?";
 		PreparedStatement pstmt=con.prepareStatement(sql);
 		pstmt.setInt(1, aId);
 		return pstmt.executeQuery();
@@ -134,6 +134,22 @@ public class associDao {
 		String sql="select MemberNum from association where ID=?";
 		PreparedStatement pstmt=con.prepareStatement(sql);
 	   	pstmt.setInt(1, id);
+		return pstmt.executeQuery();
+	}
+	
+	public ResultSet checkName(Connection con,String n)throws Exception
+	{
+		String sql="select ID from association where Name=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1,n);
+		return pstmt.executeQuery();
+	}
+	
+	public ResultSet checkId(Connection con,int id)throws Exception
+	{
+		String sql="select Name from association where ID=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setInt(1,id);
 		return pstmt.executeQuery();
 	}
 }

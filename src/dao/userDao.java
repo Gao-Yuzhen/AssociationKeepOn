@@ -82,14 +82,28 @@ public class userDao {
 		return pstmt.executeQuery();
 	}
 	
-	public int deleteUser(Connection con,String sid) throws Exception
+	public int deleteUser(Connection con,String n) throws Exception
 	{
-	    String sql="delete from user where Email=?";
+	    String sql="delete from user where Name=?";
 	    PreparedStatement pstmt=con.prepareStatement(sql);
-	   	pstmt.setString(1, sid);
+	   	pstmt.setString(1, n);
 	    return pstmt.executeUpdate();
 	}
 	
-
+    public ResultSet checkStatus(Connection con,int uid) throws Exception
+    {
+    	String sql="select Name from user where ID=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+	   	pstmt.setInt(1, uid);
+		return pstmt.executeQuery();
+    }
+    
+	public ResultSet checkName(Connection con,String n)throws Exception
+	{
+		String sql="select ID from user where Name=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1,n);
+		return pstmt.executeQuery();
+	}
 
 }
