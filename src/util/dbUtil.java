@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 public class dbUtil {
 	private String dbUrl="jdbc:mysql://localhost:3306/association"; 
 	private String dbUserName="root"; 
-	private String dbPassword="kcys5050";
+	private String dbPassword="123456";
 	private String jdbcName="com.mysql.jdbc.Driver"; 
 	
 	// 获取数据库连接 
